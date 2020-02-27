@@ -1,38 +1,30 @@
-import React, {useState} from "react";
+import React, {StrictMode} from "react";
+import {HashRouter, Switch, Route} from "react-router-dom";
 import {createApiClient} from "../shared/requestInterceptionApi";
 import DemoEndpoints from "../shared/DemoEndpoints";
+import Placeholder from "./suspense/Placeholder";
+import StudyList from "./study/StudyList";
+import StudyDetails from "./study/StudyDetails";
+import {createSuspenseCache} from "./suspense/cache";
+import {ApiContext} from "./ApiClient";
 
 const api = createApiClient<DemoEndpoints>("http://localhost:8080");
+const cache = createSuspenseCache(api);
 
-export default function App() {
-    const [text, setText] = useState("");
-    const [length, setLength] = useState<number | undefined>(undefined);
-
+const App = () => {
     return (
-        <div className="container">
-            <h1>Do stuff?</h1>
-            <form>
-                <div className="form-group">
-                    <label htmlFor="blah1">Label1</label>
-                    <input
-                        type="text"
-                        id="blah1"
-                        className="form-control"
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                    />
-                </div>
-            </form>
-            <button
-                className="btn"
-                onClick={async () => {
-                    const data = await api.getLength(text);
-                    setLength(data.length);
-                }}
-            >
-                Do stuff
-            </button>
-            {length !== undefined && <p>Response: {length}</p>}
-        </div>
+        <StrictMode>
+            <HashRouter>
+                <Placeholder>
+                    <ApiContext.Provider value={cache}>
+                        <Switch>
+                            <Route path="/studies/:name" component={StudyDetails} />
+                            <Route path="/" component={StudyList} />
+                        </Switch>
+                    </ApiContext.Provider>
+                </Placeholder>
+            </HashRouter>
+        </StrictMode>
     );
-}
+};
+export default App;

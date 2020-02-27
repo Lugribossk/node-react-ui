@@ -1,12 +1,7 @@
 import child_process from "child_process";
 import path from "path";
 import puppeteer, {Page} from "puppeteer-core";
-
-const sleep = (ms: number): Promise<void> => {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-};
+import {sleep} from "../src/shared/promiseUtils";
 
 const startApp = async (path: string) => {
     const app = child_process.spawn(path, {
