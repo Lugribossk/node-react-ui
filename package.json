@@ -3,33 +3,41 @@
     "version": "0.0.1",
     "private": true,
     "engines": {
-        "node": ">= 10.13.0"
+        "node": ">= 12.13.0"
     },
+    "browserslist": [
+        "last 2 Chrome versions",
+        "last 2 Edge versions"
+    ],
     "scripts": {
         "prettier:fix": "prettier --write \"{src,test}/**/*.{ts,tsx,json}\"",
         "prettier:check": "prettier --list-different \"{src,test}/**/*.{ts,tsx,json}\"",
-        "prompt:js": "parcel build src/prompt/prompt-app.tsx --out-dir target --target node --bundle-node-modules --no-source-maps",
-        "prompt:executable": "nexe target/prompt-app.js -o target/prompt-app.exe -r node_modules/winstrap/dist/css/winstrap.min.css",
-        "fixsubsystem": "editbin /subsystem:windows target/prompt-app.exe"
+        "clean": "rimraf target/main/**.* target/renderer/**.*",
+        "build:renderer": "parcel build src/renderer/index.html --out-dir target/renderer --no-source-maps",
+        "build:main": "parcel build src/main/main.ts --out-dir target/main --target node --bundle-node-modules --no-source-maps",
+        "build:executable": "nexe target/main/main.js -o target/app.exe -r target/renderer/*",
+        "build": "yarn run clean && yarn run build:renderer && yarn run build:main && yarn run build:executable",
+        "fixsubsystem": "editbin /subsystem:windows target/app.exe",
+        "start:renderer": "parcel serve src/renderer/index.html --out-dir target/serve --port 8080 --no-autoinstall",
+        "start:main": "node -r ts-node/register/transpile-only src/main/main.ts"
     },
     "dependencies": {
-        "carlo": "0.9.28",
-        "nexe": "2.0.0-rc.34",
-        "parcel": "1.10.3",
-        "prettier": "1.15.2",
-        "puppeteer-core": "1.10.0",
-        "purecss": "1.0.0",
-        "react": "16.6.3",
-        "react-dom": "16.6.3",
-        "ts-node": "7.0.1",
-        "typescript": "3.1.6",
+        "puppeteer-core": "2.1.1",
+        "react": "16.12.0",
+        "react-dom": "16.12.0",
         "winstrap": "0.5.12"
     },
     "devDependencies": {
-        "@types/node": "10.12.9",
-        "@types/prettier": "1.15.0",
-        "@types/puppeteer-core": "1.9.0",
-        "@types/react": "16.7.6",
-        "@types/react-dom": "16.0.9"
+        "@types/node": "13.7.6",
+        "@types/prettier": "1.19.0",
+        "@types/puppeteer-core": "2.0.0",
+        "@types/react": "16.9.23",
+        "@types/react-dom": "16.9.5",
+        "nexe": "3.3.2",
+        "parcel": "1.12.4",
+        "prettier": "1.19.1",
+        "rimraf": "3.0.2",
+        "ts-node": "8.6.2",
+        "typescript": "3.8.2"
     }
 }

@@ -1,6 +1,6 @@
 # node-react-ui
 
 
-## Running
+## Building
 1. `yarn`
-2. `node -r ts-node/register src/prompt/prompt-app.tsx`
+2. `yarn run build`
