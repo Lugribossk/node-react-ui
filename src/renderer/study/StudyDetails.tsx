@@ -19,7 +19,16 @@ const StudyDetails: React.FunctionComponent = () => {
             <ul>
                 {study.stimuli.map(stimulus => (
                     <li key={stimulus.id}>
-                        {stimulus.name} - {stimulus.type} - {stimulus.exposureTimeMs}ms
+                        <h4>{stimulus.name}</h4>
+                        <p>
+                            {stimulus.type} - {stimulus.exposureTimeMs}ms
+                        </p>
+                        {stimulus.type === "image" && (
+                            <img
+                                style={{maxWidth: 100, maxHeight: 100}}
+                                src={`http://localhost:8080/media/${study.name}/${stimulus.path}`}
+                            />
+                        )}
                     </li>
                 ))}
             </ul>

@@ -5,21 +5,21 @@ import puppeteer, {Request} from "puppeteer-core";
 import {findChromium, findReactDevToolsArgs} from "./chromium";
 import {callApiMethod} from "../shared/requestInterceptionApi";
 import MIME_TYPES from "../shared/mimeTypes";
-import DemoApiServer from "./DemoApiServer";
+import DemoApiServer, {STUDY_DATA_FOLDER} from "./DemoApiServer";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
-const serveRendererFile = (pathname: string, request: Request) => {
-    const filename = path.join(__dirname, "..", "..", "target", "renderer", pathname);
-    const extension = path.extname(pathname);
+const serveLocalFile = async (rootFolder: string, relativeName: string, request: Request) => {
+    const filename = path.join(rootFolder, decodeURIComponent(relativeName));
+    const extension = path.extname(relativeName);
 
     if (!fs.existsSync(filename)) {
-        console.warn(`Renderer file not found: ${pathname}`);
+        console.warn(`Local file not found: ${filename}`);
         return request.respond({status: 404});
     }
 
-    const content = fs.readFileSync(filename);
+    const content = await fs.promises.readFile(filename);
     return request.respond({
         status: 200,
         contentType: MIME_TYPES[extension],
@@ -45,10 +45,11 @@ const run = async () => {
         executablePath: chromium.path,
         headless: false,
         pipe: true,
+        defaultViewport: null,
         args: [
             `--app=data:text/html,${encodeURIComponent("<title>Test</title>")}`,
-            `--window-size=800,600`,
-            `--window-position=500,500`,
+            `--window-size=1000,800`,
+            `--window-position=500,300`,
             "--disable-windows10-custom-titlebar",
             ...(isDevelopment ? findReactDevToolsArgs(chromium) : []),
             ...(isTest ? ["--remote-debugging-port=8315"] : [])
@@ -58,25 +59,37 @@ const run = async () => {
 
     const origin = "http://localhost:8080";
     const apiPrefix = "/api/";
+    const mediaPrefix = "/media/";
+    const rendererFiles = path.join(__dirname, "..", "..", "target", "renderer");
     const server = new DemoApiServer();
 
     await page.setRequestInterception(true);
     page.on("request", async request => {
-        const url = new URL(request.url());
+        try {
+            const url = new URL(request.url());
 
-        if (url.origin !== origin) {
-            return request.continue();
+            if (url.origin !== origin) {
+                return request.continue();
+            }
+
+            if (url.pathname.startsWith(apiPrefix)) {
+                return callApiMethod(server, request);
+            }
+
+            if (url.pathname.startsWith(mediaPrefix)) {
+                const filename = url.pathname.substr(url.pathname.indexOf(mediaPrefix) + mediaPrefix.length);
+                return serveLocalFile(STUDY_DATA_FOLDER, filename, request);
+            }
+
+            if (isDevelopment) {
+                return request.continue();
+            }
+
+            return serveLocalFile(rendererFiles, url.pathname, request);
+        } catch (e) {
+            console.error("Error while handing request:", e);
+            return request.respond({status: 503});
         }
-
-        if (url.pathname.startsWith(apiPrefix)) {
-            return callApiMethod(server, request);
-        }
-
-        if (isDevelopment) {
-            return request.continue();
-        }
-
-        return serveRendererFile(url.pathname, request);
     });
 
     await page.goto(`${origin}/index.html`);

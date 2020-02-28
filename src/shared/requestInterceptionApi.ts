@@ -36,15 +36,10 @@ export const callApiMethod = async (server: Endpoints, request: Request) => {
         return request.respond({status: 404});
     }
 
-    try {
-        const response = await server[endpoint](...args);
-        return request.respond({
-            status: 200,
-            contentType: MIME_TYPES.json,
-            body: JSON.stringify(response)
-        });
-    } catch (e) {
-        console.error(e);
-        return request.respond({status: 503});
-    }
+    const response = await server[endpoint](...args);
+    return request.respond({
+        status: 200,
+        contentType: MIME_TYPES.json,
+        body: JSON.stringify(response)
+    });
 };

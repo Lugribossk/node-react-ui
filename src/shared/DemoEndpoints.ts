@@ -12,6 +12,7 @@ type Stimulus = {
     type: "image" | "video";
     exposureTimeMs: number;
     displayOrder: number;
+    path: string;
 };
 
 type DemoEndpoints = Endpoints & {

@@ -28,14 +28,14 @@ class Suspender<T> {
         );
     }
 
-    valueorThrow(): T {
+    valueOrThrow(): T {
         if (this.state === "pending") {
             throw this.promise;
         }
         if (this.state === "rejected") {
             throw this.value;
         }
-        return this.value as any;
+        return this.value as T;
     }
 }
 
@@ -49,12 +49,11 @@ export const createSuspenseCache = <T extends Endpoints>(api: T): SuspenseCache<
                     const key = `${name};${args.map(a => `${a};`)}`;
                     if (!cache.has(key)) {
                         const promise = api[name](...args);
-
                         cache.set(key, new Suspender(promise));
                     }
 
                     const suspender = cache.get(key)!;
-                    return suspender.valueorThrow();
+                    return suspender.valueOrThrow();
                 };
             }
         }

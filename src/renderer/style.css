@@ -6,3 +6,7 @@ body {
     user-select: none;
     height: 100%;
 }
+
+h2, h4 {
+    padding-top: 3px;
+}
