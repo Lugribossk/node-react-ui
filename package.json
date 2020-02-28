@@ -9,13 +9,17 @@
         "last 2 Chrome versions",
         "last 2 Edge versions"
     ],
+    "pkg": {
+        "assets": "target/renderer/*"
+    },
+    "bin": "target/main/main.js",
     "scripts": {
         "prettier:fix": "prettier --write \"{src,test}/**/*.{ts,tsx,json}\"",
         "prettier:check": "prettier --list-different \"{src,test}/**/*.{ts,tsx,json}\"",
         "clean": "rimraf target/main/**.* target/renderer/**.*",
         "build:renderer": "parcel build src/renderer/index.html --out-dir target/renderer --no-source-maps",
-        "build:main": "parcel build src/main/main.ts --out-dir target/main --target node --bundle-node-modules --no-source-maps --no-minify",
-        "build:executable": "nexe target/main/main.js -o target/app.exe -r target/renderer/*",
+        "build:main": "parcel build src/main/main.ts --out-dir target/main --target node --no-source-maps",
+        "build:executable": "pkg --target node12-win-x64 --output target/app.exe .",
         "build": "yarn run clean && yarn run build:renderer && yarn run build:main && yarn run build:executable",
         "fixsubsystem": "editbin /subsystem:windows target/app.exe",
         "start:renderer": "parcel serve src/renderer/index.html --out-dir target/serve --port 8080 --no-autoinstall",
@@ -37,8 +41,8 @@
         "@types/react": "16.9.23",
         "@types/react-dom": "16.9.5",
         "@types/react-router-dom": "5.1.3",
-        "nexe": "3.3.2",
         "parcel": "1.12.4",
+        "pkg": "4.4.3",
         "prettier": "1.19.1",
         "rimraf": "3.0.2",
         "ts-node": "8.6.2",
