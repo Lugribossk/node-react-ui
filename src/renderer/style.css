@@ -5,6 +5,7 @@ html, #root {
 body {
     user-select: none;
     height: 100%;
+    overflow-y: scroll;
 }
 
 h2, h4 {

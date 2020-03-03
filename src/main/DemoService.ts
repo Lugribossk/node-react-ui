@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import {Database, OPEN_READWRITE} from "sqlite3";
-import DemoEndpoints from "../shared/DemoEndpoints";
 
 const dbGet = (db: Database, sql: string): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -27,19 +26,34 @@ const dbAll = (db: Database, sql: string): Promise<any[]> => {
     });
 };
 
+export type Study = {
+    id: string;
+    name: string;
+    stimuli: Stimulus[];
+};
+
+export type Stimulus = {
+    id: string;
+    name: string;
+    type: "image" | "video";
+    exposureTimeMs: number;
+    displayOrder: number;
+    path: string;
+};
+
 export const STUDY_DATA_FOLDER = path.join(process.env.ProgramData!, "iMotions", "Lab_NG", "Data");
 
-export default class DemoApiServer implements DemoEndpoints {
-    [name: string]: (...args: any[]) => Promise<any>;
+export default class DemoService {
+    private blah: string = "test";
 
-    async getStudyNames() {
+    async getStudyNames(): Promise<string[]> {
         return fs
             .readdirSync(STUDY_DATA_FOLDER)
             .filter(file => path.extname(file) === ".db" && file !== "AttentionDB.db")
             .map(file => path.basename(file, ".db"));
     }
 
-    async getStudyByName(name: string) {
+    async getStudyByName(name: string): Promise<Study> {
         const dbFile = path.join(STUDY_DATA_FOLDER, `${name}.db`);
         const db = new Database(dbFile, OPEN_READWRITE);
         const study = await dbGet(db, "select * from Study");

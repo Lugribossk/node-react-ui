@@ -1,35 +1,17 @@
 import path from "path";
-import fs from "fs";
 import child_process from "child_process";
-import puppeteer, {Request} from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 import {findChromium, findReactDevToolsArgs} from "./chromium";
-import {callApiMethod} from "../shared/requestInterceptionApi";
+import {callApiMethod} from "../shared/rpcApi";
 import MIME_TYPES from "../shared/mimeTypes";
-import DemoApiServer, {STUDY_DATA_FOLDER} from "./DemoApiServer";
+import DemoService, {STUDY_DATA_FOLDER} from "./DemoService";
+import {serveLocalFile} from "./requestInterception";
+import {showMessageBox} from "./messageBox";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
-const serveLocalFile = async (rootFolder: string, relativeName: string, request: Request) => {
-    const filename = path.join(rootFolder, decodeURIComponent(relativeName));
-    const extension = path.extname(relativeName);
-
-    if (!fs.existsSync(filename)) {
-        console.warn(`Local file not found: ${filename}`);
-        return request.respond({
-            status: 404,
-            contentType: MIME_TYPES.json,
-            body: JSON.stringify({message: `Local file ${filename} not found.`})
-        });
-    }
-
-    const content = await fs.promises.readFile(filename);
-    return request.respond({
-        status: 200,
-        contentType: MIME_TYPES[extension],
-        body: content
-    });
-};
+const RENDERER_BUILT_FOLDER = path.join(__dirname, "..", "..", "target", "renderer");
 
 const run = async () => {
     // To center, get resolution with:
@@ -38,10 +20,10 @@ const run = async () => {
 
     const chromium = findChromium();
     if (!chromium) {
-        child_process.spawn("PowerShell", [
-            "-Command",
-            `(New-Object -ComObject Wscript.Shell).Popup("Please install the latest version of either Microsoft Edge or Google Chrome.", 0, "Edge or Chrome required", 16)`
-        ]);
+        showMessageBox(
+            "Edge or Chrome required",
+            "Please install the latest version of either Microsoft Edge or Google Chrome."
+        );
         throw new Error("Browser not found.");
     }
 
@@ -51,7 +33,7 @@ const run = async () => {
         pipe: true,
         defaultViewport: null,
         args: [
-            `--app=data:text/html,${encodeURIComponent("<title>Test</title>")}`,
+            `--app=data:text/html,${encodeURIComponent("<title>Loading...</title>")}`,
             `--window-size=1000,800`,
             `--window-position=500,300`,
             "--disable-windows10-custom-titlebar",
@@ -64,8 +46,7 @@ const run = async () => {
     const origin = "http://localhost:8080";
     const apiPrefix = "/api/";
     const mediaPrefix = "/media/";
-    const rendererFiles = path.join(__dirname, "..", "..", "target", "renderer");
-    const server = new DemoApiServer();
+    const service = new DemoService();
 
     await page.setRequestInterception(true);
     page.on("request", async request => {
@@ -77,7 +58,7 @@ const run = async () => {
             }
 
             if (url.pathname.startsWith(apiPrefix)) {
-                return callApiMethod(server, request);
+                return callApiMethod(service, request);
             }
 
             if (url.pathname.startsWith(mediaPrefix)) {
@@ -89,7 +70,7 @@ const run = async () => {
                 return request.continue();
             }
 
-            return serveLocalFile(rendererFiles, url.pathname, request);
+            return serveLocalFile(RENDERER_BUILT_FOLDER, url.pathname, request);
         } catch (e) {
             console.error("Error while handing request:", e);
             return request.respond({

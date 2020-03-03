@@ -1,9 +1,7 @@
-import {Endpoints} from "../../shared/requestInterceptionApi";
+type Unpromisify<T> = T extends (...args: infer A) => Promise<infer U> ? (...args: A) => U : never;
 
-type Unpromisify<T> = T extends Promise<infer U> ? U : T;
-
-export type SuspenseCache<T extends Endpoints> = {
-    [P in keyof T]: T[P] extends (...args: infer R) => any ? (...args: R) => Unpromisify<ReturnType<T[P]>> : never;
+export type AllSync<T> = {
+    [K in keyof T]: Unpromisify<T[K]>;
 };
 
 class Suspender<T> {
@@ -39,7 +37,7 @@ class Suspender<T> {
     }
 }
 
-export const createSuspenseCache = <T extends Endpoints>(api: T): SuspenseCache<T> => {
+export const createSuspenseCache = <T>(api: T): AllSync<T> => {
     const cache: Map<string, Suspender<any>> = new Map();
     return new Proxy(
         {},
@@ -48,7 +46,7 @@ export const createSuspenseCache = <T extends Endpoints>(api: T): SuspenseCache<
                 return (...args: unknown[]) => {
                     const key = `${name};${args.map(a => `${a};`)}`;
                     if (!cache.has(key)) {
-                        const promise = api[name](...args);
+                        const promise = (api as any)[name](...args);
                         cache.set(key, new Suspender(promise));
                     }
 
@@ -57,5 +55,5 @@ export const createSuspenseCache = <T extends Endpoints>(api: T): SuspenseCache<
                 };
             }
         }
-    ) as SuspenseCache<T>;
+    ) as AllSync<T>;
 };
