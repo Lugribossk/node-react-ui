@@ -16,7 +16,11 @@ const serveLocalFile = async (rootFolder: string, relativeName: string, request:
 
     if (!fs.existsSync(filename)) {
         console.warn(`Local file not found: ${filename}`);
-        return request.respond({status: 404});
+        return request.respond({
+            status: 404,
+            contentType: MIME_TYPES.json,
+            body: JSON.stringify({message: `Local file ${filename} not found.`})
+        });
     }
 
     const content = await fs.promises.readFile(filename);
@@ -88,7 +92,11 @@ const run = async () => {
             return serveLocalFile(rendererFiles, url.pathname, request);
         } catch (e) {
             console.error("Error while handing request:", e);
-            return request.respond({status: 503});
+            return request.respond({
+                status: 500,
+                contentType: MIME_TYPES.json,
+                body: JSON.stringify({message: e.message})
+            });
         }
     });
 
