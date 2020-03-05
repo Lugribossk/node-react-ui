@@ -13,6 +13,8 @@ type AllAsync<T> = {
     [K in keyof T]: AsyncMethod<T[K]>;
 };
 
+export type RpcService = {};
+
 export const API_PREFIX = "/api/";
 export const FILE_PREFIX = "/files/";
 
@@ -49,7 +51,7 @@ export const createApiClient = <T>(): AllAsync<T> => {
     ) as AllAsync<T>;
 };
 
-export const callApiMethod = async (services: {}[], request: Request) => {
+export const callApiMethod = async (services: RpcService[], request: Request) => {
     try {
         const url = new URL(request.url());
         const endpoint = url.pathname.substr(url.pathname.lastIndexOf("/") + 1);

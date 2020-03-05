@@ -23,7 +23,7 @@
         "build:copynative-pkg": "copyfiles -f node_modules/sqlite3/lib/binding/node-v72-win32-x64/node_sqlite3.node target/pkg",
         "build:executable-nexe": "nexe target/main/main.js -o target/nexe/app.exe -r target/renderer/*",
         "build:copynative-nexe": "copyfiles node_modules/sqlite3/lib/binding/node-v72-win32-x64/node_sqlite3.node target/nexe",
-        "build": "yarn run clean && yarn run build:renderer && yarn run build:main && yarn run build:executable-pkg && yarn run build:copynative-pkg",
+        "build": "yarn run clean && yarn run build:renderer && yarn run build:main && yarn run build:executable-nexe && yarn run build:copynative-nexe",
         "fixsubsystem": "editbin /subsystem:windows target/app.exe",
         "compress": "upx target/nexe/app.exe",
         "start:renderer": "parcel serve src/renderer/index.html --out-dir target/serve --port 8080 --no-autoinstall",
