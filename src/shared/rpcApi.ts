@@ -59,7 +59,7 @@ export const callApiMethod = async (services: {}[], request: Request) => {
 
         console.log(`Api request for ${endpoint}(${JSON.stringify(args).slice(1, -1)})`);
 
-        const service = services.find(s => (endpoint in s));
+        const service = services.find(s => endpoint in s);
         if (!service) {
             return request.respond({
                 status: 400,

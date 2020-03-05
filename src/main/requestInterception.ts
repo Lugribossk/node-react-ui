@@ -22,7 +22,7 @@ export const serveLocalFile = async (rootFolder: string, relativeName: string, r
     }
     const extension = path.extname(relativeName).substr(1);
 
-    console.log(`File request for ${filename}'`);
+    console.log(`File request for ${filename}`);
 
     if (!fs.existsSync(filename)) {
         console.warn(`Local file not found: ${filename}`);
