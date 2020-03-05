@@ -13,13 +13,20 @@ type AllAsync<T> = {
     [K in keyof T]: AsyncMethod<T[K]>;
 };
 
-export const createApiClient = <T>(baseUrl: string): AllAsync<T> => {
+export const API_PREFIX = "/api/";
+export const FILE_PREFIX = "/files/";
+
+export const createApiClient = <T>(): AllAsync<T> => {
+    // Create a proxy where any property access returns a function that will send an http request to an RPC endpoint with the same name.
+    // This would be pure chaos in js as all method names would be callable regardless of whether that makes sense.
+    // Fortunately we're using Typescript and can cast the proxy to the same type as the Node class that implements the RPC service.
+    // That way only the methods that we know exist are callable and their parameters have the right types.
     return new Proxy(
         {},
         {
             get(target, name: string) {
                 return async (...args: any[]) => {
-                    const response = await fetch(`${baseUrl}/api/${name}`, {
+                    const response = await fetch(`${API_PREFIX}${name}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": MIME_TYPES.json
@@ -42,7 +49,7 @@ export const createApiClient = <T>(baseUrl: string): AllAsync<T> => {
     ) as AllAsync<T>;
 };
 
-export const callApiMethod = async (service: {}, request: Request) => {
+export const callApiMethod = async (services: {}[], request: Request) => {
     try {
         const url = new URL(request.url());
         const endpoint = url.pathname.substr(url.pathname.lastIndexOf("/") + 1);
@@ -50,9 +57,10 @@ export const callApiMethod = async (service: {}, request: Request) => {
         const data = JSON.parse(request.postData() || "{}");
         const args = data.args || [];
 
-        console.log(`Api request for ${endpoint}(${args})`);
+        console.log(`Api request for ${endpoint}(${JSON.stringify(args).slice(1, -1)})`);
 
-        if (!(endpoint in service)) {
+        const service = services.find(s => (endpoint in s));
+        if (!service) {
             return request.respond({
                 status: 400,
                 contentType: MIME_TYPES.json,

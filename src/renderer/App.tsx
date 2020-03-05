@@ -6,10 +6,12 @@ import StudyList from "./study/StudyList";
 import StudyDetails from "./study/StudyDetails";
 import {createSuspenseCache} from "./suspense/cache";
 import {ApiContext} from "./ApiClient";
+import AnalysisDetails from "./study/AnalysisDetails";
 import ErrorBoundary from "./ui/ErrorBoundary";
-type DemoApiServer = import("../main/DemoService").default;
+import ReportRunPage from "./study/ReportRunPage";
+type StudyService = import("../main/StudyService").default;
 
-const api = createApiClient<DemoApiServer>("http://localhost:8080");
+const api = createApiClient<StudyService>();
 const cache = createSuspenseCache(api);
 
 const App = () => {
