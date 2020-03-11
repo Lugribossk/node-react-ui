@@ -2,9 +2,9 @@ import path from "path";
 import puppeteer from "puppeteer-core";
 import {findChromium, findReactDevToolsArgs} from "./chromium";
 import {showMessageBox} from "./messageBox";
-import {API_PREFIX, callApiMethod, FILE_PREFIX, RpcService} from "../shared/rpcApi";
+import {API_PREFIX, callApiMethod, FILE_PREFIX, RpcService} from "./rpcApi";
 import {serveLocalFile} from "./requestInterception";
-import MIME_TYPES from "../shared/mimeTypes";
+import MIME_TYPES from "../util/mimeTypes";
 
 type Options = {
     filesRoot: string;

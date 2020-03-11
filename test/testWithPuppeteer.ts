@@ -1,7 +1,7 @@
 import child_process from "child_process";
 import path from "path";
 import puppeteer, {Page} from "puppeteer-core";
-import {sleep} from "../src/shared/promiseUtils";
+import {sleep} from "../src/common/util/promiseUtils";
 
 const startApp = async (path: string) => {
     const app = child_process.spawn(path, {
@@ -33,7 +33,7 @@ class TestContext {
 }
 
 export const start = async () => {
-    const app = await startApp(path.join(__dirname, "../target/app.exe"));
+    const app = await startApp(path.join(__dirname, "../target/app/app.exe"));
 
     const browser = await puppeteer.connect({
         browserURL: "http://localhost:8315",

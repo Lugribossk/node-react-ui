@@ -1,7 +1,7 @@
 import {Request} from "puppeteer-core";
 import path from "path";
 import fs from "fs";
-import MIME_TYPES, {getMimeType} from "../shared/mimeTypes";
+import MIME_TYPES, {getMimeType} from "../util/mimeTypes";
 
 // We can't use fs.promises.readFile() since that does not work with Pkg and Nexe's embedded resources.
 const readFileAsync = async (path: string): Promise<Buffer> => {

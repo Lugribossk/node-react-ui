@@ -20,7 +20,7 @@ export type Stimulus = {
 
 export const STUDY_DATA_FOLDER = path.join(process.env.ProgramData!, "iMotions", "Lab_NG", "Data");
 
-export default class DemoService {
+export default class StudyService {
     private blah: string = "test";
 
     async getStudyNames(): Promise<string[]> {

@@ -1,4 +1,4 @@
-import MIME_TYPES from "./mimeTypes";
+import MIME_TYPES from "../util/mimeTypes";
 type Request = import("puppeteer-core").Request;
 
 // type AsyncFunctionNames<T> = {

@@ -1,31 +1,28 @@
-import React, {StrictMode} from "react";
+import React, {StrictMode, useState} from "react";
 import {HashRouter, Switch, Route} from "react-router-dom";
-import {createApiClient} from "../shared/rpcApi";
-import Placeholder from "./suspense/Placeholder";
+import Placeholder from "../common/suspense/Placeholder";
 import StudyList from "./study/StudyList";
 import StudyDetails from "./study/StudyDetails";
-import {createSuspenseCache} from "./suspense/cache";
-import {ApiContext} from "./ApiClient";
-import AnalysisDetails from "./study/AnalysisDetails";
-import ErrorBoundary from "./ui/ErrorBoundary";
-import ReportRunPage from "./study/ReportRunPage";
+import ErrorBoundary from "../common/ui/ErrorBoundary";
+import StudyStore, {StudyStoreProvider} from "./study/StudyStore";
+import {createApiClient} from "../common/browser/rpcApi";
 type StudyService = import("../main/StudyService").default;
 
-const api = createApiClient<StudyService>();
-const cache = createSuspenseCache(api);
-
 const App = () => {
+    const [api] = useState(() => createApiClient<StudyService>());
+    const [studyStore] = useState(() => new StudyStore(api));
+
     return (
         <StrictMode>
             <HashRouter>
                 <ErrorBoundary>
                     <Placeholder>
-                        <ApiContext.Provider value={cache}>
+                        <StudyStoreProvider value={studyStore}>
                             <Switch>
                                 <Route path="/studies/:name" component={StudyDetails} />
                                 <Route path="/" component={StudyList} />
                             </Switch>
-                        </ApiContext.Provider>
+                        </StudyStoreProvider>
                     </Placeholder>
                 </ErrorBoundary>
             </HashRouter>

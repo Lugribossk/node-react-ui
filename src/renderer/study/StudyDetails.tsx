@@ -1,10 +1,10 @@
 import React from "react";
 import {Link, useParams} from "react-router-dom";
-import {useApi} from "../ApiClient";
+import {useStudyStore} from "./StudyStore";
 
 const StudyDetails: React.FunctionComponent = () => {
-    const {name} = useParams();
-    const study = useApi().getStudyByName(name!);
+    const {name} = useParams<{name: string}>();
+    const study = useStudyStore().getStudy(name);
 
     return (
         <div className="container">

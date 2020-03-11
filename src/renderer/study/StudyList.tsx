@@ -1,9 +1,9 @@
 import React from "react";
-import {useApi} from "../ApiClient";
 import {Link} from "react-router-dom";
+import {useStudyStore} from "./StudyStore";
 
 const StudyList: React.FunctionComponent = () => {
-    const names = useApi().getStudyNames();
+    const names = useStudyStore().getStudyNames();
 
     return (
         <div className="container">
