@@ -26,7 +26,7 @@ const StudyDetails: React.FunctionComponent = () => {
                         {stimulus.type === "image" && (
                             <img
                                 style={{maxWidth: 100, maxHeight: 100}}
-                                src={`http://localhost:8080/media/${study.name}/${stimulus.path}`}
+                                src={`/files/${study.name}/${stimulus.path}`}
                             />
                         )}
                     </li>

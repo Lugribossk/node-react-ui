@@ -24,11 +24,12 @@
         "build:executable-nexe": "nexe target/main/main.js --target windows-x64-12.13.1 --output target/app/app.exe --resource target/renderer/*",
         "build:copynative-nexe": "copyfiles node_modules/sqlite3/lib/binding/node-v72-win32-x64/node_sqlite3.node target/app",
         "build": "yarn run clean && yarn run build:renderer && yarn run build:main && yarn run build:executable-nexe && yarn run build:copynative-nexe && yarn run fixsubsystem",
-        "fixsubsystem": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Professional\\VC\\Tools\\MSVC\\14.11.25503\\bin\\Hostx64\\x64\\editbin.exe\" /subsystem:windows target/app/app.exe",
+        "fixsubsystem": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.16.27023\\bin\\Hostx64\\x64\\editbin.exe\" /subsystem:windows target/app/app.exe",
         "fixicon": "ResourceHacker.exe -open target/app/app.exe -save target/app/app.exe -action addoverwrite -res src/assets/appicon.ico -mask ICONGROUP,1,",
         "compress": "upx target/app/app.exe",
         "start:renderer": "parcel serve src/renderer/index.html --out-dir target/serve --port 8080 --no-autoinstall",
-        "start:main": "node -r ts-node/register/transpile-only src/main/main.ts"
+        "start:main": "node -r ts-node/register/transpile-only src/main/main.ts",
+        "typescript": "tsc --noEmit -p ."
     },
     "dependencies": {
         "puppeteer-core": "2.1.1",

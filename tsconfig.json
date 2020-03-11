@@ -10,7 +10,7 @@
         "noImplicitAny": true,
         "noImplicitThis": true,
         "noImplicitReturns": true,
-        "outDir": "./target",
+        "outDir": "./target/ts",
         "sourceMap": true,
         "strict": true,
         "target": "es2020"
