@@ -8,22 +8,30 @@ import MIME_TYPES from "../shared/mimeTypes";
 
 type Options = {
     filesRoot: string;
+    // The location of the renderer files.
+    // Must the the same as the Parcel build output folder and Pkg/Nexe resources folder.
+    rendererRoot: string;
     services: RpcService[];
-    initialRoute: string;
+    initialRoute?: string;
+    userDataDir?: string;
+    windowSize?: {width: number; height: number};
 };
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
-// The location of the renderer files.
-// Must the the same as the Parcel build output folder and Pkg/Nexe resources folder.
-const RENDERER_BUILT_FOLDER = path.join(__dirname, "..", "..", "target", "renderer");
-
 // The "fake" url we will be servering the renderer files and RPC api on.
 // Must be the same url as the Parcel dev server.
 const SERVER_ORIGIN = "http://localhost:8080";
 
-export const openBrowserUi = async ({filesRoot, services = [], initialRoute = "/"}: Options) => {
+export const openBrowserUi = async ({
+    filesRoot,
+    rendererRoot,
+    services = [],
+    initialRoute = "/",
+    userDataDir,
+    windowSize = {width: 1000, height: 800}
+}: Options) => {
     // To center, get resolution with:
     // wmic path win32_VideoController get CurrentHorizontalResolution, CurrentVerticalResolution
     // https://github.com/sebhildebrandt/systeminformation
@@ -42,9 +50,10 @@ export const openBrowserUi = async ({filesRoot, services = [], initialRoute = "/
         headless: false,
         pipe: true,
         defaultViewport: null,
+        userDataDir: userDataDir ? path.join(userDataDir, `${chromium.type} Profile`) : undefined,
         args: [
             `--app=data:text/html,${encodeURIComponent("<title>Loading...</title>")}`,
-            `--window-size=1000,800`,
+            `--window-size=${windowSize.width},${windowSize.height}`,
             `--window-position=500,300`,
             "--disable-windows10-custom-titlebar",
             ...(isDevelopment ? findReactDevToolsArgs(chromium) : []),
@@ -84,7 +93,7 @@ export const openBrowserUi = async ({filesRoot, services = [], initialRoute = "/
 
             // We're running in production so serve renderer files from the filesystem (which will actually hit the
             // resources in the virtual filesystem packaged with Pkg/Nexe rather than the real one).
-            return serveLocalFile(RENDERER_BUILT_FOLDER, url.pathname, request);
+            return serveLocalFile(rendererRoot, url.pathname, request);
         } catch (e) {
             console.error("Error while handing request:", e);
             return request.respond({

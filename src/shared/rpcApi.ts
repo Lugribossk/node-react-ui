@@ -9,7 +9,7 @@ type Request = import("puppeteer-core").Request;
 
 type AsyncMethod<T> = T extends (...args: infer A) => Promise<infer U> ? T : never;
 
-type AllAsync<T> = {
+export type OnlyAsync<T> = {
     [K in keyof T]: AsyncMethod<T[K]>;
 };
 
@@ -18,7 +18,7 @@ export type RpcService = {};
 export const API_PREFIX = "/api/";
 export const FILE_PREFIX = "/files/";
 
-export const createApiClient = <T>(): AllAsync<T> => {
+export const createApiClient = <T>(): OnlyAsync<T> => {
     // Create a proxy where any property access returns a function that will send an http request to an RPC endpoint with the same name.
     // This would be pure chaos in js as all method names would be callable regardless of whether that makes sense.
     // Fortunately we're using Typescript and can cast the proxy to the same type as the Node class that implements the RPC service.
@@ -26,7 +26,10 @@ export const createApiClient = <T>(): AllAsync<T> => {
     return new Proxy(
         {},
         {
-            get(target, name: string) {
+            get(target, name: PropertyKey) {
+                if (typeof name === "symbol") {
+                    return undefined;
+                }
                 return async (...args: any[]) => {
                     const response = await fetch(`${API_PREFIX}${name}`, {
                         method: "POST",
@@ -48,7 +51,7 @@ export const createApiClient = <T>(): AllAsync<T> => {
                 };
             }
         }
-    ) as AllAsync<T>;
+    ) as OnlyAsync<T>;
 };
 
 export const callApiMethod = async (services: RpcService[], request: Request) => {

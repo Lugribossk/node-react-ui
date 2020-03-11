@@ -9,7 +9,7 @@ const REACT_DEVTOOLS_EDGE = "gpphkfbcpidddadnkolkpfckpihlkkil";
 
 type Chromium = {
     path: string;
-    type: "edge" | "chrome";
+    type: "Edge" | "Chrome";
 };
 
 const findExe = (browserExe: string): string | undefined => {
@@ -31,36 +31,39 @@ export const findChromium = (): Chromium | undefined => {
     if (location) {
         return {
             path: location,
-            type: "edge"
+            type: "Edge"
         };
     }
     location = findExe(CHROME_EXE);
     if (location) {
         return {
             path: location,
-            type: "chrome"
+            type: "Chrome"
         };
     }
     return undefined;
 };
 
 const findExtension = (browser: string, extensionId: string): string | undefined => {
-    const appData = process.env.LOCALAPPDATA;
-    if (!appData) {
-        return undefined;
-    }
-    const extensionFolder = path.join(appData, browser, "User Data", "Default", "Extensions", extensionId);
+    const extensionFolder = path.join(
+        process.env.LOCALAPPDATA!,
+        browser,
+        "User Data",
+        "Default",
+        "Extensions",
+        extensionId
+    );
     if (!fs.existsSync(extensionFolder)) {
         return undefined;
     }
 
     // TODO find highest version
-    return extensionFolder + "\\4.4.0_0";
+    return extensionFolder + "\\4.5.0_0";
 };
 
 export const findReactDevToolsArgs = (chromium: Chromium): string[] => {
     const path =
-        chromium.type === "edge"
+        chromium.type === "Edge"
             ? findExtension("Microsoft\\Edge", REACT_DEVTOOLS_EDGE)
             : findExtension("Google\\Chrome", REACT_DEVTOOLS_CHROME);
     if (!path) {
