@@ -27,4 +27,4 @@ It is no longer maintained and has an overly complex RPC system.
 `puppeteer-core` v1.7.0 that targets Chrome 70 still works with Chrome 80 a year and a half later. So with only limited use of Puppeteer's features it does not seem that risky.
 
 #### Why not `better-sqlite3`?
-The final packaged application always seems to crash when trying to locate its native modules, no matter where they are located.
+Its native module does not appear to be compatible with a bundled application that does not maintain the node_modules folder structure.

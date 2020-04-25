@@ -3,5 +3,7 @@
     "tabWidth": 4,
     "singleQuote": false,
     "trailingComma": "none",
-    "bracketSpacing": false
+    "bracketSpacing": false,
+    "endOfLine": "crlf",
+    "arrowParens": "avoid"
 }

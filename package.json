@@ -15,7 +15,7 @@
     "bin": "target/main/main.js",
     "scripts": {
         "prettier:fix": "prettier --write \"{src,test}/**/*.{ts,tsx,json}\"",
-        "prettier:check": "prettier --list-different \"{src,test}/**/*.{ts,tsx,json}\"",
+        "prettier:check": "prettier --check \"{src,test}/**/*.{ts,tsx,json}\"",
         "clean": "rimraf target/main/**.* target/renderer/**.* target/app/**.*",
         "build:renderer": "parcel build src/renderer/index.html --experimental-scope-hoisting --out-dir target/renderer --no-source-maps",
         "build:main": "parcel build src/main/main.ts --experimental-scope-hoisting --out-dir target/main --target node --no-source-maps",
@@ -51,7 +51,7 @@
         "nexe": "3.3.2",
         "parcel": "1.12.4",
         "pkg": "4.4.3",
-        "prettier": "1.19.1",
+        "prettier": "2.0.2",
         "rimraf": "3.0.2",
         "ts-node": "8.6.2",
         "typescript": "3.8.2"
