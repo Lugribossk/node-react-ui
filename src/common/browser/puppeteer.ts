@@ -1,7 +1,7 @@
 import path from "path";
 import puppeteer from "puppeteer-core";
 import {findChromium, findReactDevToolsArgs} from "./chromium";
-import {showMessageBox} from "./messageBox";
+import {showMessageBox} from "./windows";
 import {API_PREFIX, callApiMethod, FILE_PREFIX, RpcService} from "./rpcApi";
 import {serveLocalFile} from "./requestInterception";
 import MIME_TYPES from "../util/mimeTypes";
@@ -40,7 +40,9 @@ export const openBrowserUi = async ({
     if (!chromium) {
         showMessageBox(
             "Edge or Chrome required",
-            "Please install the latest version of either Microsoft Edge or Google Chrome."
+            "Please install the latest version of either Microsoft Edge or Google Chrome.",
+            "ok",
+            "stop"
         );
         throw new Error("Browser not found.");
     }

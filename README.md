@@ -25,3 +25,7 @@ It is no longer maintained and has an overly complex RPC system.
 
 #### What about Puppeteer's warning that only the bundled version of Chromium is supported?
 `puppeteer-core` v1.7.0 that targets Chrome 70 still works with Chrome 80 a year and a half later. So with only limited use of Puppeteer's features it does not seem that risky.
+
+#### Native modules
+Native modules are a massive pain to deal with. They cannot be bundled into the executable like the other files, so they have to be distributed together with it. And the js script then needs to refer to these paths and not the paths during the build process.
+Unfortunately some libraries load their native modules via overly clever indirections that cannot be determined at build time meaning they won't work for the time being.

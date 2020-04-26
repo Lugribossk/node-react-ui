@@ -24,14 +24,17 @@
     },
     "dependencies": {
         "better-sqlite3": "7.0.0",
+        "ffi-napi": "2.4.7",
         "puppeteer-core": "3.0.1",
         "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-router-dom": "5.1.2",
+        "ref-napi": "1.4.3",
         "winstrap": "0.5.12"
     },
     "devDependencies": {
         "@types/better-sqlite3": "5.4.0",
+        "@types/ffi-napi": "2.4.1",
         "@types/minimist": "1.2.0",
         "@types/node": "13.13.2",
         "@types/puppeteer-core": "2.0.0",

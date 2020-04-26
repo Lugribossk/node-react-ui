@@ -71,6 +71,9 @@ const build = async () => {
     let {code, assets} = await ncc(`./src/main/main.ts`, {
         minify: true
     });
+    // ncc turns require() calls for native modules into something like
+    // require(__webpack_require__.ab + "/build/Release/ffi_bindings.node");
+    // We replace this with a path relative to the executable which seems the most robust, and lets us place all of them in the same folder.
     code = code.replace(/require\([a-zA-Z0-9.+"/\\_\- ]+[/\\](\S+\.node)"\)/g, (match, name) => {
         return `require(require("path").dirname(process.execPath) + "/lib/${name}")`;
     });
@@ -92,6 +95,7 @@ const build = async () => {
     const exeName = "app";
     await nexeExecutable(exeName);
 
+    // Changing the subsytem of the executable makes it not show the console while running.
     const editBin =
         "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/editbin.exe";
     if (fs.existsSync(editBin)) {
