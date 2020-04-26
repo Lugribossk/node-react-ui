@@ -89,7 +89,7 @@ const build = async () => {
     }
 
     console.log("Creating executable.");
-    const exeName = "demo";
+    const exeName = "app";
     await nexeExecutable(exeName);
 
     const editBin =
