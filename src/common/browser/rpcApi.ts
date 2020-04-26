@@ -1,5 +1,5 @@
 import MIME_TYPES from "../util/mimeTypes";
-type Request = import("puppeteer-core").Request;
+import type {Request} from "puppeteer-core";
 
 // type AsyncFunctionNames<T> = {
 //     [K in keyof T]: T[K] extends (...args: infer A) => Promise<infer U> ? K : never;

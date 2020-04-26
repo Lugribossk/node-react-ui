@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {openDatabase} from "./SqliteDb";
+import Database from "better-sqlite3";
 
 export type Study = {
     id: string;
@@ -32,9 +32,9 @@ export default class StudyService {
 
     async getStudyByName(name: string): Promise<Study> {
         const dbFile = path.join(STUDY_DATA_FOLDER, `${name}.db`);
-        const db = await openDatabase(dbFile);
-        const study = await db.findFirst("select * from Study");
-        const stimuli = await db.findAll("select * from Stimuli");
+        const db = new Database(dbFile, {fileMustExist: true});
+        const study = db.prepare("select * from Study").get();
+        const stimuli = db.prepare("select * from Stimuli").all();
 
         return {
             id: study.UniqueStudyIdentifier,

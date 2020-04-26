@@ -2,9 +2,8 @@ import Store from "../../common/flux/Store";
 import {createStoreContext} from "../../common/flux/StoreContext";
 import Suspender from "../../common/suspense/Suspender";
 import {OnlyAsync} from "../../common/browser/rpcApi";
-
-type StudyService = import("../../main/StudyService").default;
-type Study = import("../../main/StudyService").Study;
+import type StudyService from "../../main/StudyService";
+import type {Study} from "../../main/StudyService";
 
 const [StudyStoreProvider, useStudyStore] = createStoreContext<StudyStore>();
 export {StudyStoreProvider, useStudyStore};

@@ -6,7 +6,7 @@ import StudyDetails from "./study/StudyDetails";
 import ErrorBoundary from "../common/ui/ErrorBoundary";
 import StudyStore, {StudyStoreProvider} from "./study/StudyStore";
 import {createApiClient} from "../common/browser/rpcApi";
-type StudyService = import("../main/StudyService").default;
+import type StudyService from "../main/StudyService";
 
 const App = () => {
     const [api] = useState(() => createApiClient<StudyService>());
