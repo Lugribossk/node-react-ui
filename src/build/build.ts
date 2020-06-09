@@ -68,7 +68,7 @@ const build = async () => {
     await renderer.bundle();
 
     console.log("Bundling main.");
-    let {code, assets} = await ncc(`./src/main/main.ts`, {
+    let {code, assets} = await ncc(path.join(__dirname, `../main/main.ts`), {
         minify: true
     });
     // ncc turns require() calls for native modules into something like
