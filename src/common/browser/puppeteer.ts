@@ -1,6 +1,5 @@
-import path from "path";
 import puppeteer from "puppeteer-core";
-import {findChromium, findReactDevToolsArgs} from "./chromium";
+import {findChromium} from "./Chromium";
 import {showMessageBox} from "./windows";
 import {API_PREFIX, callApiMethod, FILE_PREFIX, RpcService} from "./rpcApi";
 import {serveLocalFile} from "./requestInterception";
@@ -30,7 +29,7 @@ export const openBrowserUi = async ({
     services = [],
     initialRoute = "/",
     userDataDir,
-    windowSize = {width: 1000, height: 800}
+    windowSize = {width: 1100, height: 800}
 }: Options) => {
     // To center, get resolution with:
     // wmic path win32_VideoController get CurrentHorizontalResolution, CurrentVerticalResolution
@@ -47,18 +46,26 @@ export const openBrowserUi = async ({
         throw new Error("Browser not found.");
     }
 
+    const extensions = [];
+    if (isDevelopment) {
+        const reactDevTools = chromium.findReactDevTools();
+        if (reactDevTools) {
+            extensions.push(reactDevTools);
+        }
+
+    }
     const browser = await puppeteer.launch({
         executablePath: chromium.path,
         headless: false,
         pipe: true,
         defaultViewport: null,
-        userDataDir: userDataDir ? path.join(userDataDir, `${chromium.type} Profile`) : undefined,
+        userDataDir: userDataDir ? chromium.getProfileFolder(userDataDir) : undefined,
         args: [
             `--app=data:text/html,${encodeURIComponent("<title>Loading...</title>")}`,
             `--window-size=${windowSize.width},${windowSize.height}`,
             `--window-position=500,300`,
             "--disable-windows10-custom-titlebar",
-            ...(isDevelopment ? findReactDevToolsArgs(chromium) : []),
+            ...(extensions.length > 0 ? [`--disable-extensions-except=${extensions.join(",")}`, `--load-extension=${extensions.join(",")}`] : []),
             ...(isTest ? ["--remote-debugging-port=8315"] : [])
         ]
     });
