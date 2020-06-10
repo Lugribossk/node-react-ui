@@ -2,7 +2,8 @@ import fs from "fs";
 import child_process from "child_process";
 import path from "path";
 import rimraf from "rimraf";
-import Bundler from "parcel";
+import Parcel from "@parcel/core";
+import defaultParcelConfig from "@parcel/config-default";
 import {compile} from "nexe";
 import {exec} from "pkg";
 import ncc from "@zeit/ncc";
@@ -58,14 +59,18 @@ const build = async () => {
     await new Promise(resolve => rimraf("target/app/**/*", resolve));
 
     console.log("Bundling renderer.");
-    const renderer = new Bundler(`src/renderer/index.html`, {
-        scopeHoist: true,
-        outDir: `target/renderer`,
+    const bundler = new Parcel({
+        entries: `src/renderer/index.html`,
+        defaultConfig: {
+            ...defaultParcelConfig,
+            filePath: require.resolve("@parcel/config-default"),
+        },
+        disableCache: true,
         sourceMaps: false,
-        minify: true,
-        hmr: false
+        mode: "production",
+        distDir: "target/renderer"
     });
-    await renderer.bundle();
+    await bundler.run();
 
     console.log("Bundling main.");
     let {code, assets} = await ncc(path.join(__dirname, `../main/main.ts`), {

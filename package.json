@@ -19,7 +19,7 @@
         "typescript": "tsc --noEmit -p .",
         "test": "yarn run prettier:check && yarn run typescript",
         "build": "cross-env TS_NODE_FILES=true node -r ts-node/register/transpile-only src/build/build.ts",
-        "start:renderer": "parcel serve src/renderer/index.html --out-dir target/serve --port 8080 --no-autoinstall",
+        "start:renderer": "parcel serve src/renderer/index.html --dist-dir target/serve --port 8080 --no-autoinstall",
         "start:main": "cross-env NODE_ENV=development node -r ts-node/register/transpile-only src/main/main.ts"
     },
     "dependencies": {
@@ -45,7 +45,7 @@
         "@zeit/ncc": "0.22.3",
         "cross-env": "7.0.2",
         "nexe": "3.3.2",
-        "parcel": "1.12.4",
+        "parcel": "2.0.0-nightly.287",
         "pkg": "4.4.7",
         "prettier": "2.0.5",
         "rimraf": "3.0.2",
