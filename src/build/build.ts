@@ -7,6 +7,7 @@ import defaultParcelConfig from "@parcel/config-default";
 import {compile} from "nexe";
 import {exec} from "pkg";
 import ncc from "@zeit/ncc";
+import {NodePlatform} from "nexe/lib/target";
 
 const runCommand = (cmd: string, args: string[]): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -29,20 +30,24 @@ const runCommand = (cmd: string, args: string[]): Promise<string> => {
     });
 };
 
-const nexeExecutable = async (exeName: string) => {
+const nexeExecutable = async (appName: string, version: string, platform: NodePlatform) => {
     await compile({
         input: "target/main/main.js",
-        output: `target/app/${exeName}.exe`,
-        targets: ["windows-x64-12.13.1"],
+        output: `target/app/${appName}`,
+        targets: [{
+            platform: platform,
+            arch: "x64",
+            version: version
+        }],
         resources: ["target/renderer/*"]
     });
 };
 
-const pkgExecutable = async (exeName: string) => {
+const pkgExecutable = async (exeName: string, nodeVersion: string) => {
     await exec([
         "target/main/main.js",
         "--target",
-        "node12.13.1-win-x64",
+        `node${nodeVersion}-win-x64`,
         "--output",
         `target/app/${exeName}.exe`,
         "--config",
@@ -52,6 +57,8 @@ const pkgExecutable = async (exeName: string) => {
 
 const build = async () => {
     console.log("Building...");
+    const appName = "app";
+    const nodeVersion = "12.13.1";
 
     console.log("Cleaning target dir.");
     await new Promise(resolve => rimraf("target/main/**/*", resolve));
@@ -96,22 +103,22 @@ const build = async () => {
         await fs.promises.writeFile(`${libDir}/${path.basename(name)}`, asset.source);
     }
 
-    console.log("Creating executable.");
-    const exeName = "app";
-    await nexeExecutable(exeName);
+    console.log("Creating executables.");
+    await nexeExecutable(appName, nodeVersion, "windows");
+    await nexeExecutable(appName, nodeVersion, "mac");
 
     // Changing the subsytem of the executable makes it not show the console while running.
     const editBin =
         "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/editbin.exe";
     if (fs.existsSync(editBin)) {
         console.log("Fixing executable subsystem.");
-        await runCommand(editBin, ["/subsystem:windows", `target/app/${exeName}.exe`]);
+        await runCommand(editBin, ["/subsystem:windows", `target/app/${appName}.exe`]);
     }
 
     const upx = "target/upx.exe";
     if (fs.existsSync(upx)) {
         console.log("Compressing executable.");
-        await runCommand(upx, [`target/app/${exeName}.exe`]);
+        await runCommand(upx, [`target/app/${appName}.exe`]);
     }
 
     console.log("Done!");

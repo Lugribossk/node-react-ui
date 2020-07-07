@@ -23,9 +23,9 @@
         "start:main": "cross-env NODE_ENV=development node -r ts-node/register/transpile-only src/main/main.ts"
     },
     "dependencies": {
-        "better-sqlite3": "7.0.0",
+        "better-sqlite3": "7.1.0",
         "ffi-napi": "2.4.7",
-        "puppeteer-core": "3.3.0",
+        "puppeteer-core": "5.0.0",
         "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-router-dom": "5.2.0",
@@ -44,8 +44,8 @@
         "@types/rimraf": "3.0.0",
         "@zeit/ncc": "0.22.3",
         "cross-env": "7.0.2",
-        "nexe": "3.3.2",
-        "parcel": "2.0.0-nightly.287",
+        "nexe": "3.3.7",
+        "parcel": "2.0.0-beta.1",
         "pkg": "4.4.7",
         "prettier": "2.0.5",
         "rimraf": "3.0.2",
